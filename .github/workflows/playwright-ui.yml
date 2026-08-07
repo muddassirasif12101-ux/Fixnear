@@ -1,0 +1,59 @@
+name: Playwright UI tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  playwright-ui:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install client dependencies
+        run: npm ci --prefix client
+
+      - name: Install Playwright browsers
+        run: |
+          cd client
+          npx playwright install --with-deps
+
+      - name: Start Vite dev server (background)
+        run: |
+          cd client
+          npm run dev &> vite.log &
+          echo $! > /tmp/vite.pid
+
+      - name: Wait for Vite to be ready
+        run: |
+          n=0
+          until curl -sSf http://localhost:5173 >/dev/null; do
+            n=$((n+1))
+            if [ $n -ge 60 ]; then
+              echo "Vite did not start in time" >&2
+              cat client/vite.log || true
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: Run Playwright UI tests
+        run: |
+          cd client
+          npm run test:ui
+
+      - name: Tear down Vite server
+        if: always()
+        run: |
+          if [ -f /tmp/vite.pid ]; then
+            kill "$(cat /tmp/vite.pid)" || true
+            rm -f /tmp/vite.pid
+          fi
