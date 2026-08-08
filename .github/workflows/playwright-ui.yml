@@ -26,7 +26,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'client/package-lock.json'
 
-      - name: Diagnostic: Node & npm versions
+      - name: "Diagnostic: Node & npm versions"
         run: |
           echo "--- PATH ---"
           echo "$PATH"
