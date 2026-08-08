@@ -2,9 +2,13 @@ name: Playwright UI tests
 
 on:
   push:
-    branches: [ main, master ]
+    # Run on main/master and any feature branches (feature/*)
+    branches: [ main, master, 'feature/*' ]
   pull_request:
+    # Run on PRs targeting main/master
     branches: [ main, master ]
+  # Allow manual workflow dispatch
+  workflow_dispatch: {}
 
 jobs:
   playwright-ui:
