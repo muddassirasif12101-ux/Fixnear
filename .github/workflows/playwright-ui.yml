@@ -20,7 +20,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          # Use Node 20 (current LTS) required by Playwright
+          node-version: '20'
+          # Enable npm cache to speed up CI
+          cache: 'npm'
+          cache-dependency-path: 'client/package-lock.json'
 
       - name: Install client dependencies
         run: npm ci --prefix client
