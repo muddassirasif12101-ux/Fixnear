@@ -26,6 +26,15 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'client/package-lock.json'
 
+      - name: Diagnostic: Node & npm versions
+        run: |
+          echo "--- PATH ---"
+          echo "$PATH"
+          echo "--- node --version ---"
+          node --version
+          echo "--- npm --version ---"
+          npm --version
+
       - name: Install client dependencies
         run: npm ci --prefix client
 
